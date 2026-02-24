@@ -8,13 +8,15 @@ const boughtText = document.querySelector(".bought-text");
 
 const moneyText = document.querySelector(".money");
 
+const DELAY = 3000;
 let balance = 2000;
+let chairPrice = null;
 
 const updateBalance = () => {
   moneyText.innerText = ` $${balance}`;
 };
 
-const getPrice = async (itemName, isRendered = true) => {
+const getPrice = async (itemName, isRendered = false) => {
   if (!itemName) {
     return;
   }
@@ -44,7 +46,7 @@ const getPrice = async (itemName, isRendered = true) => {
 };
 
 const buyItem = async (itemName) => {
-  const itemPrice = await getPrice(itemName, false);
+  const itemPrice = await getPrice(itemName);
 
   if (itemPrice === null) {
     boughtText.innerText = "That item doesn't exist!";
@@ -74,7 +76,7 @@ const buyItem = async (itemName) => {
 
 checkPriceBtn.addEventListener("click", () => {
   const itemName = checkPriceInput.value;
-  getPrice(itemName);
+  getPrice(itemName, true);
 });
 
 buyItemBtn.addEventListener("click", () => {
@@ -83,3 +85,22 @@ buyItemBtn.addEventListener("click", () => {
 });
 
 updateBalance();
+
+setInterval(async () => {
+  if (chairPrice === null) {
+    chairPrice = await getPrice("chair");
+  } else {
+    let newChairPrice = await getPrice("chair");
+    if (newChairPrice < chairPrice) {
+      if (balance >= newChairPrice) {
+        await buyItem("chair");
+        chairPrice = newChairPrice;
+        console.log("bought chair for less");
+      } else {
+        console.log("price dropped, but still too broke. Need that job...");
+      }
+    } else {
+      console.log("still waiting for a price drop...");
+    }
+  }
+}, DELAY);

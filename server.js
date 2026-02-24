@@ -6,6 +6,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Content-Security-Policy: default-src 'self'; connect-src http://localhost:3000;");
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
