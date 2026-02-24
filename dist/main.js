@@ -36,7 +36,6 @@ buyItemBtn.addEventListener("click", async () => {
       method: "POST",
     });
     const data = await response.json();
-    console.log(data);
 
     if (response.status === 404 || response.status === 400) {
       boughtText.innerText = data.error;

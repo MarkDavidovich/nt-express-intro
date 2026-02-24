@@ -48,6 +48,22 @@ app.post("/buy/:name", (req, res) => {
   res.json(item);
 });
 
+app.post("/sale", (req, res) => {
+  const isAdmin = req.query.admin === "true";
+
+  if (!isAdmin) {
+    return res.status(403).json({ error: "Unauthorized: admin access required" });
+  }
+
+  store.forEach((item) => {
+    if (item.inventory >= 10) {
+      item.price /= 2;
+    }
+  });
+
+  res.json(store);
+});
+
 app.listen(PORT, () => {
   console.log(`API server running at http://localhost:${PORT}`);
 });
