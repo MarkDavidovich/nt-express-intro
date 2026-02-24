@@ -2,10 +2,14 @@ const express = require("express");
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
   next();
 });
 
@@ -24,7 +28,7 @@ app.get("/priceCheck/:item", (req, res) => {
   const item = getItemByName(req.params.item);
 
   if (!item) {
-    return res.status(404).json({ price: "null" });
+    return res.status(404).json({ error: `Item not found!` });
   }
 
   res.json({ price: item.price });
@@ -32,18 +36,16 @@ app.get("/priceCheck/:item", (req, res) => {
 
 app.post("/buy/:name", (req, res) => {
   const item = getItemByName(req.params.name);
-  console.log(item);
   if (!item) {
     return res.status(404).json({ error: "Item not found!" });
   }
 
   if (item.inventory === 0) {
-    return res.status(400).json({ error: "Item is out of stock!" });
+    return res.status(400).json({ error: `${item.name} is out of stock!` });
   }
 
   item.inventory--;
-
-  res.json({ message: `${item.name} purchased!` });
+  res.json(item);
 });
 
 app.listen(PORT, () => {
